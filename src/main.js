@@ -3,19 +3,76 @@ import { createGame } from './game/state.js'
 import { createHeader } from './components/header.js'
 import { createCounters } from './components/counters.js'
 import { createBoard } from './components/board.js'
+import { PAIRS_COUNT } from './data/cards.js'
+
+const CLOSE_DELAY_MS = 1000
 
 const state = createGame()
 const counters = createCounters()
+
+const container = document.createElement('div')
+container.className = 'app'
 
 const header = createHeader(
   () => console.log('new game'),
   () => console.log('leaderboard'),
 )
 
-const board = createBoard(state.cards, (uid) => console.log('click', uid))
+const board = createBoard(state.cards, handleCardClick)
 
-const container = document.createElement('div')
-container.className = 'app'
 container.append(header, counters.root, board.root)
-
 document.body.append(container)
+
+function updateCardElement(uid, isFlipped, isMatched) {
+  const el = board.root.querySelector(`[data-uid="${uid}"]`)
+  if (!el) return
+  el.classList.toggle('is-flipped', isFlipped)
+  el.classList.toggle('is-matched', isMatched)
+}
+
+function handleCardClick(uid) {
+  if (state.isLocked || state.isGameOver) return
+
+  const card = state.cards.find((c) => c.uid === uid)
+  if (!card || card.isFlipped || card.isMatched) return
+
+  card.isFlipped = true
+  updateCardElement(uid, true, false)
+
+  if (state.firstUid === null) {
+    state.firstUid = uid
+    return
+  }
+
+  state.moves += 1
+  counters.update(state.moves, state.pairsFound)
+
+  const first = state.cards.find((c) => c.uid === state.firstUid)
+  const second = card
+  state.isLocked = true
+
+  if (first.typeId === second.typeId) {
+    first.isMatched = true
+    second.isMatched = true
+    state.pairsFound += 1
+    counters.update(state.moves, state.pairsFound)
+    state.firstUid = null
+    state.isLocked = false
+
+    if (state.pairsFound === PAIRS_COUNT) {
+      state.isGameOver = true
+      console.log('win in', state.moves, 'moves')
+    }
+    return
+  }
+
+  state.closeTimerId = setTimeout(() => {
+    first.isFlipped = false
+    second.isFlipped = false
+    updateCardElement(first.uid, false, false)
+    updateCardElement(second.uid, false, false)
+    state.firstUid = null
+    state.isLocked = false
+    state.closeTimerId = null
+  }, CLOSE_DELAY_MS)
+}
