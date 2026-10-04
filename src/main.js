@@ -1,27 +1,38 @@
 import './style.css'
 import { createGame } from './game/state.js'
+import { saveResult } from './game/storage.js'
 import { createHeader } from './components/header.js'
 import { createCounters } from './components/counters.js'
 import { createBoard } from './components/board.js'
+import { createModal } from './components/modal.js'
+import { createLeaderboardContent } from './components/leaderboard.js'
+import { createWinContent } from './components/winModal.js'
 import { PAIRS_COUNT } from './data/cards.js'
 
 const CLOSE_DELAY_MS = 1000
 
 const state = createGame()
 const counters = createCounters()
+const modal = createModal()
 
 const container = document.createElement('div')
 container.className = 'app'
 
 const header = createHeader(
   () => console.log('new game'),
-  () => console.log('leaderboard'),
+  handleShowLeaderboard,
 )
-
 const board = createBoard(state.cards, handleCardClick)
 
 container.append(header, counters.root, board.root)
-document.body.append(container)
+document.body.append(container, modal.root)
+
+modal.root.addEventListener('click', (event) => {
+  const target = event.target
+  if (target instanceof HTMLElement && target.dataset.close === 'true') {
+    modal.close()
+  }
+})
 
 function updateCardElement(uid, isFlipped, isMatched) {
   const el = board.root.querySelector(`[data-uid="${uid}"]`)
@@ -61,7 +72,8 @@ function handleCardClick(uid) {
 
     if (state.pairsFound === PAIRS_COUNT) {
       state.isGameOver = true
-      console.log('win in', state.moves, 'moves')
+      saveResult(state.moves)
+      modal.open(createWinContent(state.moves, () => console.log('new game')))
     }
     return
   }
@@ -75,4 +87,8 @@ function handleCardClick(uid) {
     state.isLocked = false
     state.closeTimerId = null
   }, CLOSE_DELAY_MS)
+}
+
+function handleShowLeaderboard() {
+  modal.open(createLeaderboardContent())
 }
