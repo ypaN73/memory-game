@@ -1,12 +1,18 @@
 :root {
-  --bg: #FAF7F2;
+  --bg: #F4EEE6;
   --surface: #FFFFFF;
   --text: #2B2A28;
   --muted: #8A8580;
   --accent: #C97B5A;
   --accent-hover: #B36947;
   --border: #E8E2DA;
+  --card-back: #EFE7DC;
+  --card-back-pattern: #D9CFC0;
   --radius: 16px;
+  --radius-sm: 10px;
+  --shadow-sm: 0 1px 2px rgba(43, 42, 40, 0.06);
+  --shadow-md: 0 8px 20px -8px rgba(43, 42, 40, 0.18);
+  --shadow-lg: 0 24px 48px -24px rgba(43, 42, 40, 0.24);
 }
 
 * {
@@ -16,22 +22,31 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(201, 123, 90, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 85% 100%, rgba(140, 110, 80, 0.06) 0%, transparent 50%),
+    radial-gradient(circle, rgba(43, 42, 40, 0.045) 1px, transparent 1px);
+  background-size: auto, auto, 22px 22px;
+  background-attachment: fixed;
   color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 .app {
   max-width: 720px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 20px 48px;
+  padding: 32px 20px 64px;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
+
+/* ---------- Header ---------- */
 
 .header {
   display: flex;
@@ -41,15 +56,29 @@ body {
 }
 
 .header__title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.header__title::after {
+  content: 'gallery';
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .header__actions {
   display: flex;
   gap: 8px;
 }
+
+/* ---------- Buttons ---------- */
 
 .btn {
   border: 1px solid transparent;
@@ -59,17 +88,23 @@ body {
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s, transform .1s;
+  transition: background .15s, color .15s, border-color .15s, transform .1s, box-shadow .15s;
 }
 
 .btn:active {
   transform: scale(0.97);
 }
 
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .btn--ghost {
-  background: transparent;
+  background: var(--surface);
   color: var(--text);
   border-color: var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn--ghost:hover {
@@ -79,11 +114,14 @@ body {
 .btn--primary {
   background: var(--accent);
   color: #fff;
+  box-shadow: 0 4px 12px -4px rgba(201, 123, 90, 0.5);
 }
 
 .btn--primary:hover {
   background: var(--accent-hover);
 }
+
+/* ---------- Counters ---------- */
 
 .counters {
   display: flex;
@@ -95,29 +133,41 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  box-shadow: var(--shadow-sm);
 }
 
 .counter__label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  font-weight: 600;
 }
 
 .counter__value {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
+
+/* ---------- Board (паспарту) ---------- */
 
 .board {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
 }
+
+/* ---------- Cards ---------- */
 
 .card {
   aspect-ratio: 1;
@@ -125,7 +175,13 @@ body {
   border: none;
   background: none;
   cursor: pointer;
-  perspective: 800px;
+  perspective: 1200px;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .card__inner {
@@ -133,7 +189,8 @@ body {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform .45s cubic-bezier(.4, 0, .2, 1);
+  transition: transform .5s cubic-bezier(.4, 0, .2, 1);
+  will-change: transform;
 }
 
 .card.is-flipped .card__inner,
@@ -144,27 +201,43 @@ body {
 .card__face {
   position: absolute;
   inset: 0;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   backface-visibility: hidden;
-  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
+/* Рубашка — светлая с узором ромбов */
+
 .card__face--back {
-  background: linear-gradient(135deg, #3D3B38, #2B2A28);
+  background-color: var(--card-back);
+  background-image:
+    linear-gradient(45deg, var(--card-back-pattern) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--card-back-pattern) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--card-back-pattern) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--card-back-pattern) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+  border: 1px solid rgba(43, 42, 40, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 .card__face--back::after {
   content: '';
   position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  inset: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(43, 42, 40, 0.08);
+  pointer-events: none;
 }
 
+/* Открытая карточка — картина в раме */
+
 .card__face--front {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(0);
   background: var(--surface);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 .card__image {
@@ -172,28 +245,33 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: calc(var(--radius-sm) - 1px);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
+
+/* Совпавшая пара — лёгкий акцент */
 
 .card.is-matched {
   cursor: default;
-  opacity: 0.85;
 }
 
-@media (max-width: 480px) {
-  .board {
-    gap: 8px;
-  }
-
-  .header__title {
-    font-size: 18px;
-  }
-
-  .btn {
-    padding: 8px 14px;
-    font-size: 13px;
-  }
+.card.is-matched .card__face--front {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(201, 123, 90, 0.25), var(--shadow-md);
 }
 
+/* Hover только для доступных карточек */
+
+.card:not(.is-flipped):not(.is-matched):hover .card__inner {
+  transform: translateY(-2px);
+}
+
+.card:not(.is-flipped):not(.is-matched):hover .card__face--back {
+  box-shadow: var(--shadow-md), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- Modal ---------- */
 
 body.no-scroll {
   overflow: hidden;
@@ -208,57 +286,107 @@ body.no-scroll {
 }
 
 .modal::backdrop {
-  background: rgba(30, 28, 26, 0.5);
+  background: rgba(43, 42, 40, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal__content {
   background: var(--surface);
   border-radius: 20px;
   padding: 28px;
-  max-width: 420px;
+  max-width: 440px;
   width: calc(100vw - 40px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+  box-shadow: var(--shadow-lg);
 }
 
 .modal__title {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .modal__text {
-  margin: 0 0 20px;
+  margin: 0 0 24px;
   color: var(--muted);
 }
 
 .modal__actions {
   display: flex;
-  gap: 8px;
-  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal__actions .btn {
+  flex: 1;
 }
 
 .modal__close {
-  margin-top: 16px;
+  margin-top: 20px;
+  width: 100%;
 }
+
+/* ---------- Leaderboard ---------- */
 
 .leaderboard {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  margin-bottom: 8px;
 }
 
 .leaderboard th,
 .leaderboard td {
   text-align: left;
-  padding: 8px 4px;
+  padding: 10px 4px;
   border-bottom: 1px solid var(--border);
 }
 
 .leaderboard th {
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--muted);
   font-weight: 600;
+}
+
+.leaderboard tr:last-child td {
+  border-bottom: none;
+}
+
+.leaderboard td:first-child {
+  font-weight: 700;
+  color: var(--accent);
+  width: 40px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 480px) {
+  .app {
+    padding: 20px 14px 40px;
+  }
+
+  .board {
+    gap: 8px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .header__title {
+    font-size: 20px;
+  }
+
+  .header__title::after {
+    font-size: 11px;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .counter__value {
+    font-size: 20px;
+  }
 }

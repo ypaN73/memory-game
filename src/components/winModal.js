@@ -9,14 +9,20 @@ export function createWinContent(moves, onNewGame) {
   newGameBtn.addEventListener('click', onNewGame)
 
   const closeBtn = createElement('button', {
-    classes: ['btn', 'btn--ghost', 'modal__close'],
+    classes: ['btn', 'btn--ghost'],
     text: 'Close',
     attrs: { type: 'button', 'data-close': 'true' },
   })
 
   return [
     createElement('h2', { classes: ['modal__title'], text: 'You win!' }),
-    createElement('p', { classes: ['modal__text'], text: `You found all pairs in ${moves} moves.` }),
-    createElement('div', { classes: ['modal__actions'], children: [newGameBtn, closeBtn] }),
+    createElement('p', {
+      classes: ['modal__text'],
+      text: `You found all pairs in ${moves} moves.`,
+    }),
+    createElement('div', {
+      classes: ['modal__actions'],
+      children: [closeBtn, newGameBtn],
+    }),
   ]
 }
