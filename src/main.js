@@ -1,5 +1,5 @@
 import './style.css'
-import { createGame } from './game/state.js'
+import { createGame, createDeck } from './game/state.js'
 import { saveResult } from './game/storage.js'
 import { createHeader } from './components/header.js'
 import { createCounters } from './components/counters.js'
@@ -18,13 +18,11 @@ const modal = createModal()
 const container = document.createElement('div')
 container.className = 'app'
 
-const header = createHeader(
-  () => console.log('new game'),
-  handleShowLeaderboard,
-)
-const board = createBoard(state.cards, handleCardClick)
+const header = createHeader(handleNewGame, handleShowLeaderboard)
+const countersEl = counters.root
+let board = createBoard(state.cards, handleCardClick)
 
-container.append(header, counters.root, board.root)
+container.append(header, countersEl, board.root)
 document.body.append(container, modal.root)
 
 modal.root.addEventListener('click', (event) => {
@@ -33,6 +31,12 @@ modal.root.addEventListener('click', (event) => {
     modal.close()
   }
 })
+
+function renderBoard() {
+  board.root.remove()
+  board = createBoard(state.cards, handleCardClick)
+  container.append(board.root)
+}
 
 function updateCardElement(uid, isFlipped, isMatched) {
   const el = board.root.querySelector(`[data-uid="${uid}"]`)
@@ -73,7 +77,7 @@ function handleCardClick(uid) {
     if (state.pairsFound === PAIRS_COUNT) {
       state.isGameOver = true
       saveResult(state.moves)
-      modal.open(createWinContent(state.moves, () => console.log('new game')))
+      modal.open(createWinContent(state.moves, handleNewGame))
     }
     return
   }
@@ -87,6 +91,25 @@ function handleCardClick(uid) {
     state.isLocked = false
     state.closeTimerId = null
   }, CLOSE_DELAY_MS)
+}
+
+function handleNewGame() {
+  if (state.closeTimerId !== null) {
+    clearTimeout(state.closeTimerId)
+    state.closeTimerId = null
+  }
+
+  modal.close()
+
+  state.cards = createDeck()
+  state.moves = 0
+  state.pairsFound = 0
+  state.firstUid = null
+  state.isLocked = false
+  state.isGameOver = false
+
+  counters.update(0, 0)
+  renderBoard()
 }
 
 function handleShowLeaderboard() {
