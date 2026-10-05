@@ -23,6 +23,8 @@
 
 Открой http://localhost:5173
 
+Или вместо этого открой https://memory-game-4x4.netlify.app
+
 ## Сборка
 
     npm run build
