@@ -3,7 +3,7 @@ import { PAIRS_COUNT } from '../data/cards.js'
 
 export function createCounters() {
   const movesValue = createElement('span', { classes: ['counter__value'], text: '0' })
-  const pairsValue = createElement('span', { classes: ['counter__value'], text: '0' })
+  const pairsValue = createElement('span', { text: '0' })
 
   const root = createElement('div', {
     classes: ['counters'],
