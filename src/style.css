@@ -46,8 +46,6 @@ body {
   gap: 24px;
 }
 
-/* ---------- Header ---------- */
-
 .header {
   display: flex;
   align-items: center;
@@ -77,8 +75,6 @@ body {
   display: flex;
   gap: 8px;
 }
-
-/* ---------- Buttons ---------- */
 
 .btn {
   border: 1px solid transparent;
@@ -121,8 +117,6 @@ body {
   background: var(--accent-hover);
 }
 
-/* ---------- Counters ---------- */
-
 .counters {
   display: flex;
   gap: 12px;
@@ -154,8 +148,6 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* ---------- Board (паспарту) ---------- */
-
 .board {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -166,8 +158,6 @@ body {
   border: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
 }
-
-/* ---------- Cards ---------- */
 
 .card {
   aspect-ratio: 1;
@@ -207,8 +197,6 @@ body {
   transform: translateZ(0);
 }
 
-/* Рубашка — светлая с узором ромбов */
-
 .card__face--back {
   background-color: var(--card-back);
   background-image:
@@ -231,8 +219,6 @@ body {
   pointer-events: none;
 }
 
-/* Открытая карточка — картина в раме */
-
 .card__face--front {
   transform: rotateY(180deg) translateZ(0);
   background: var(--surface);
@@ -250,8 +236,6 @@ body {
   -webkit-backface-visibility: hidden;
 }
 
-/* Совпавшая пара — лёгкий акцент */
-
 .card.is-matched {
   cursor: default;
 }
@@ -261,8 +245,6 @@ body {
   box-shadow: 0 0 0 2px rgba(201, 123, 90, 0.25), var(--shadow-md);
 }
 
-/* Hover только для доступных карточек */
-
 .card:not(.is-flipped):not(.is-matched):hover .card__inner {
   transform: translateY(-2px);
 }
@@ -270,8 +252,6 @@ body {
 .card:not(.is-flipped):not(.is-matched):hover .card__face--back {
   box-shadow: var(--shadow-md), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
-
-/* ---------- Modal ---------- */
 
 body.no-scroll {
   overflow: hidden;
@@ -285,6 +265,15 @@ body.no-scroll {
   max-height: 100%;
 }
 
+.modal__wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+}
+
 .modal::backdrop {
   background: rgba(43, 42, 40, 0.45);
   backdrop-filter: blur(4px);
@@ -296,7 +285,7 @@ body.no-scroll {
   border-radius: 20px;
   padding: 28px;
   max-width: 440px;
-  width: calc(100vw - 40px);
+  width: 100%;
   box-shadow: var(--shadow-lg);
 }
 
